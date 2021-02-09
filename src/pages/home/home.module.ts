@@ -12,5 +12,4 @@ import { HomePage } from './home';
     ]
 })
 
-export class HomeModule {
-}
+export class HomeModule {}
