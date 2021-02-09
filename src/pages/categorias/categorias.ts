@@ -25,7 +25,7 @@ export class CategoriasPage {
     // para a chamada assíncrona
     this.service.findAll().subscribe(
       response => { this.items = response },
-      error => { console.log(error) }
+      error => { }
     );
   }
 
