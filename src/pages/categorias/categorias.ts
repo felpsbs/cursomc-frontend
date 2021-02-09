@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { CategoriaService } from '../../services/domain/categoria.service';
 
 @IonicPage() // para o lazy loading
 @Component({
@@ -8,11 +9,18 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class CategoriasPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams,
+    public service: CategoriaService) {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad CategoriasPage');
+    // para a chamada assíncrona
+    this.service.findAll().subscribe(
+      response => { console.log(response) },
+      error => { console.log(error) }
+    );
   }
 
 }
