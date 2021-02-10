@@ -5,15 +5,15 @@
   <img src="assets/imgs/tela-inicial.png" alt="logo">
 
   <form action="#">
-  
+  <!-- binding de atributo = [] | binding de evento = () -->
     <ion-item>
       <ion-label stacked>Email</ion-label>
-      <ion-input type="text"></ion-input>
+      <ion-input [(ngModel)]="credenciais.email" name="email" type="text"></ion-input>
     </ion-item>
   
     <ion-item>
       <ion-label stacked>Senha</ion-label>
-      <ion-input type="password"></ion-input>
+      <ion-input [(ngModel)]="credenciais.senha" name="senha" type="password"></ion-input>
     </ion-item>
   
     <button ion-button block (click)="login()">Entrar</button>
