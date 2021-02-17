@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { API_CONFIG } from '../../config/api.config';
-import { ProtutoDTO } from '../../models/produto.dto'
+import { ProdutoDTO } from '../../models/produto.dto'
 import { CartService } from '../../services/domain/cart.service';
 import { ProdutoService } from '../../services/domain/produto.service';
 
@@ -12,7 +12,7 @@ import { ProdutoService } from '../../services/domain/produto.service';
 })
 export class ProdutoDetailPage {
 
-  item: ProtutoDTO;
+  item: ProdutoDTO;
 
   constructor(
     public navCtrl: NavController, 
@@ -41,7 +41,7 @@ export class ProdutoDetailPage {
     );
   }
 
-  addToCart(produto: ProtutoDTO) {
+  addToCart(produto: ProdutoDTO) {
     this.cartService.addProduto(produto);
     this.navCtrl.setRoot('CartPage');
   }

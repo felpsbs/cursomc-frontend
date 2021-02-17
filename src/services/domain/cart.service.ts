@@ -1,6 +1,7 @@
+import { importExpr } from "@angular/compiler/src/output/output_ast";
 import { Injectable } from "@angular/core";
 import { Cart } from "../../models/cart";
-import { ProtutoDTO } from "../../models/produto.dto";
+import { ProdutoDTO } from "../../models/produto.dto";
 import { StorageService } from "../storage.service";
 
 @Injectable()
@@ -24,11 +25,57 @@ export class CartService {
         return cart;
     }
 
-    addProduto(produto: ProtutoDTO) : Cart {
+    getTotal() {
+        let cart = this.getCart();
+        let sum = 0;
+        cart.items.forEach(item => {
+            sum += item.produto.preco * item.quantidade;
+        });
+
+        return sum;
+    }
+
+    addProduto(produto: ProdutoDTO) : Cart {
         let cart = this.getCart();
         let position = cart.items.findIndex(item => item.produto.id == produto.id);
         if(position == -1) {
             cart.items.push({ quantidade: 1, produto });
+        }
+
+        this.storage.setCart(cart);
+        return cart;
+    }
+
+    removeProduto(produto: ProdutoDTO) : Cart {
+        let cart = this.getCart();
+        let position = cart.items.findIndex(item => item.produto.id == produto.id);
+        if(position != -1) {
+            cart.items.splice(position, 1);
+        }
+
+        this.storage.setCart(cart);
+        return cart;
+    }
+    
+    increaseQuantity(produto: ProdutoDTO) : Cart {
+        let cart = this.getCart();
+        let position = cart.items.findIndex(item => item.produto.id == produto.id);
+        if(position != -1) {
+            cart.items[position].quantidade++; 
+        }
+
+        this.storage.setCart(cart);
+        return cart;
+    }
+
+    decreaseQuantity(produto: ProdutoDTO) : Cart {
+        let cart = this.getCart();
+        let position = cart.items.findIndex(item => item.produto.id == produto.id);
+        if(position != -1) {
+            cart.items[position].quantidade--; 
+            if(cart.items[position].quantidade < 1) {
+                cart = this.removeProduto(produto);
+            }
         }
 
         this.storage.setCart(cart);
