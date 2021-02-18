@@ -11,6 +11,10 @@ export class ClienteService {
     constructor(public http: HttpClient, public storage: StorageService) {
     }
 
+    findById(id: string) {
+        return this.http.get(`${API_CONFIG.baseUrl}/clientes/${id}`);
+    }
+
     // quando estava tipado retornava apenas os campos do ClienteDTO
     findByEmail(email: string) {
         return this.http.get(`${API_CONFIG.baseUrl}/clientes/email?value=${email}`);
