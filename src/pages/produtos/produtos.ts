@@ -20,6 +20,10 @@ export class ProdutosPage {
   }
 
   ionViewDidLoad() {
+    this.loadData();
+  }
+
+  loadData() {
     // pegando o parâmtro passado na navegação
     let categoriaId = this.navParams.get('categoriaId');
     let loader = this.presentLoaging();
@@ -58,6 +62,13 @@ export class ProdutosPage {
 
     loader.present();
     return loader; // vamos controlar a duração manualmente
+  }
+
+  doRefresh(event) {
+    this.loadData();
+    setTimeout(() => {
+      event.complete();
+    }, 1000);
   }
 
 }
