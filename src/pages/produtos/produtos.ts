@@ -13,6 +13,7 @@ export class ProdutosPage {
 
   items : ProdutoDTO[] = [];
   page: number = 0;
+  linesPerPage: number = 10;
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams, 
@@ -28,7 +29,7 @@ export class ProdutosPage {
     // pegando o parâmtro passado na navegação
     let categoriaId = this.navParams.get('categoriaId');
     let loader = this.presentLoaging();
-    this.service.findByCategoria(categoriaId, this.page, 10).subscribe(
+    this.service.findByCategoria(categoriaId, this.page, this.linesPerPage).subscribe(
       response => { 
         let start = this.items.length;
         this.items = this.items.concat(response['content']);
