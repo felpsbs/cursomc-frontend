@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { API_CONFIG } from '../../config/api.config';
@@ -16,13 +17,17 @@ export class ProfilePage {
   cliente: ClienteDTO;
   picture: string;
   cameraOn: boolean = false;
+  profileImage;
 
   constructor(
-    public navCtrl: NavController, 
-    public navParams: NavParams, 
+    public navCtrl: NavController,
+    public navParams: NavParams,
     public storage: StorageService,
     public service: ClienteService,
-    public camera: Camera) {
+    public camera: Camera,
+    public sanitizer: DomSanitizer) {
+
+    this.profileImage = 'assets/imgs/avatar-blank.png';
   }
 
   ionViewDidLoad() {
@@ -31,14 +36,14 @@ export class ProfilePage {
 
   loadData() {
     let localUser = this.storage.getLocalUser();
-    if(localUser && localUser.email) {
+    if (localUser && localUser.email) {
       this.service.findByEmail(localUser.email).subscribe(
-        response => { 
+        response => {
           this.cliente = response as ClienteDTO; // fazendo casting = as 'tipo'
           this.getImageIfExists();
         },
         error => {
-          if(error.status == 403) {
+          if (error.status == 403) {
             this.navCtrl.setRoot('HomePage');
           }
         }
@@ -51,9 +56,15 @@ export class ProfilePage {
   getImageIfExists() {
     this.service.getImageFromBucket(this.cliente.id).subscribe(
       response => {
-        this.cliente.imgUrl = `${API_CONFIG.bucketBaseUrl}/cp${this.cliente.id}.jpg`
+        this.cliente.imgUrl = `${API_CONFIG.bucketBaseUrl}/cp${this.cliente.id}.jpg`;
+        this.blobToDataURL(response).then(dataUrl => {
+          let str: string = dataUrl as string
+          this.profileImage = this.sanitizer.bypassSecurityTrustUrl(str); // liberando a url
+        });
       },
-      error => {}
+      error => {
+        this.profileImage = 'assets/imgs/avatar-blank.png';
+      }
     )
   }
 
@@ -65,12 +76,12 @@ export class ProfilePage {
       encodingType: this.camera.EncodingType.PNG,
       mediaType: this.camera.MediaType.PICTURE
     }
-    
+
     this.camera.getPicture(options).then(
       (imageData) => {
         this.picture = 'data:image/png;base64,' + imageData;
         this.cameraOn = false;
-      }, 
+      },
       (err) => {
         this.cameraOn = false;
       }
@@ -86,12 +97,12 @@ export class ProfilePage {
       encodingType: this.camera.EncodingType.PNG,
       mediaType: this.camera.MediaType.PICTURE
     }
-    
+
     this.camera.getPicture(options).then(
       (imageData) => {
         this.picture = 'data:image/png;base64,' + imageData;
         this.cameraOn = false;
-      }, 
+      },
       (err) => {
         this.cameraOn = false;
       }
@@ -102,9 +113,9 @@ export class ProfilePage {
     this.service.uploadPicture(this.picture).subscribe(
       response => {
         this.picture = null;
-        this.loadData();
+        this.getImageIfExists();
       },
-      error => {}
+      error => { }
     );
   }
 
@@ -112,4 +123,13 @@ export class ProfilePage {
     this.picture = null;
   }
 
-}
+  // https://gist.github.com/frumbert/3bf7a68ffa2ba59061bdcfc016add9ee
+  private blobToDataURL(blob) {
+    return new Promise((fulfill, reject) => {
+      let reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = (e) => fulfill(reader.result);
+      reader.readAsDataURL(blob);
+    })
+
+  }
