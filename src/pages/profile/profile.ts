@@ -75,6 +75,25 @@ export class ProfilePage {
     );
   }
 
+  getGalleryPicture() {
+    this.cameraOn = true;
+    const options: CameraOptions = {
+      quality: 100,
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      destinationType: this.camera.DestinationType.DATA_URL, // DATA_URL = base64
+      encodingType: this.camera.EncodingType.PNG,
+      mediaType: this.camera.MediaType.PICTURE
+    }
+    
+    this.camera.getPicture(options).then(
+      (imageData) => {
+        this.picture = 'data:image/png;base64,' + imageData;
+        this.cameraOn = false;
+      }, 
+      (err) => {}
+    );
+  }
+
   sendPicture() {
     this.service.uploadPicture(this.picture).subscribe(
       response => {
